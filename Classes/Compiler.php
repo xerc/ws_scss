@@ -60,7 +60,6 @@ class Compiler
     public static function compileFile(string $scssFilePath, array $variables, string $cssFilePath = null, bool $useSourceMap = false, string $outputStyle = OutputStyle::COMPRESSED): string
     {
         $scssFilePath = GeneralUtility::getFileAbsFileName($scssFilePath);
-        $variablesHash = hash('md5', implode(',', $variables) . $scssFilePath);
         $sitePath = Environment::getPublicPath() . '/';
 
         if (!file_exists($scssFilePath)) {
@@ -74,7 +73,6 @@ class Compiler
             $filename = $pathInfo['filename'];
             $outputDir = 'typo3temp/assets/css/';
 
-
             $outputDir = str_ends_with($outputDir, '/') ? $outputDir : $outputDir . '/';
             if (!strcmp(substr($outputDir, 0, 4), 'EXT:')) {
                 [$extKey, $script] = explode('/', substr($outputDir, 4), 2);
@@ -84,6 +82,7 @@ class Compiler
                 }
             }
 
+            $variablesHash = hash('md5', implode(',', $variables) . $scssFilePath);
             $cssFilePath = $outputDir . $filename . ($variablesHash ? '_' . $variablesHash : '') . '.css';
         }
 
@@ -195,8 +194,7 @@ class Compiler
                 $filename = '_' . array_pop($parts);
                 $parts[] = $filename;
                 if (file_exists($pathInfo['dirname'] . '/' . implode('/', $parts) . '.scss')) {
-                    $hashImport = self::calculateContentHash($pathInfo['dirname'] . '/' . implode('/',
-                            $parts) . '.scss', [], $visitedFiles);
+                    $hashImport = self::calculateContentHash($pathInfo['dirname'] . '/' . implode('/', $parts) . '.scss', [], $visitedFiles);
                 }
             }
             if ($hashImport !== '') {
